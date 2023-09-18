@@ -11,7 +11,7 @@ import pydeck as pdk
 import sys
 sys.path.insert(0, 'C:/Projects/taxi_demand_predictory/')
 
-from src.inference import load_predictions_from_store, load_batch_of_features_from_store
+from src.inference import load_predictions_from_store, load_model_from_registry, load_batch_of_features_from_store, get_model_predictions
 from src.paths import DATA_DIR
 from src.plot import plot_one_sample
 
@@ -59,4 +59,19 @@ with st.spinner(text="Downloading shape file to plot taxi zones"):
     geo_df = load_shape_data_file()
     st.sidebar.write(' ✅ Shape file loaded')
     progress_bar.progress(1/N_STEPS)
-    
+
+with st.spinner(text="Fetching Batch of Inference Data"):
+    features = load_batch_of_features_from_store(current_date)
+    st.sidebar.write(' ✅ Inference features fetched from the store')
+    progress_bar.progress(2/N_STEPS)
+    print(f'{features}')
+
+with st.spinner(text="Loading ML model from the registry"):
+    model = load_model_from_registry()
+    st.sidebar.write(' ✅ Model loaded from the registry')
+    progress_bar.progress(3/N_STEPS)
+
+with st.spinner(text="Computing Model Predictions"):
+    results = get_model_predictions(model, features)
+    st.sidebar.write(' ✅ Model predictions computed')
+    progress_bar.progress(4/N_STEPS)
